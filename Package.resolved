@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftExtensionsPack",
+        "repositoryURL": "https://github.com/nerzh/swift-extensions-pack.git",
+        "state": {
+          "branch": null,
+          "revision": "8b4ed6353a7a14ce83544acd6f94d47099290cac",
+          "version": "0.1.8"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

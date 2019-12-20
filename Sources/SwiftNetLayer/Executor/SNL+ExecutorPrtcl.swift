@@ -1,0 +1,28 @@
+//
+//  File.swift
+//  
+//
+//  Created by Oleh Hudeichuk on 20.12.2019.
+//
+
+import Foundation
+
+public protocol SNLExecutorPrtcl {
+
+    var resource: SNLResourcePrtcl { get set }
+    var method: SNLHTTPMethod { get set }
+    var path: URL { get set }
+    var multipart: Bool { get set }
+    var dynamicPathsParts: SNLDynamicParts { get set }
+    var targetHeaders: SNLHeader? { get set }
+    var targetParams: SNLParams? { get set }
+    var requestHeaders: SNLHeader? { get set }
+    var requestParams: SNLParams? { get set }
+    var hash: String? { get set }
+    var body: SNLBody? { get set }
+
+    func execute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
+
+    func execute<ResponseModel: Decodable>(model: ResponseModel.Type,
+                                           _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+}
