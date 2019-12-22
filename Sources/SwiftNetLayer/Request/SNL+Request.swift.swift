@@ -10,27 +10,23 @@ import Foundation
 public struct SNLRequest: SNLRequestPrtcl {
 
     public var method: SNLHTTPMethod
-    public var path: URL {
-        willSet {
-            let value = urlWithDynamicPath(path: newValue)
-            if value != newValue {
-                self.path = value
-            }
-        }
-    }
-    public var dynamicPathsParts: [String: String] {
-        didSet {
-            let value = urlWithDynamicPath(path: path)
-            if value != path {
-                self.path = value
-            }
-        }
-    }
     public var multipart: Bool
     public var headers: [String: String]?
     public var params: [String: Any]?
     public var hash: String?
     public var body: Data?
+
+    private var _path: URL!
+    public var path: URL {
+        set { _path = urlWithDynamicPath(path: newValue) }
+        get { _path }
+    }
+
+    public var dynamicPathsParts: [String: String] {
+        didSet {
+            _path = urlWithDynamicPath(path: path)
+        }
+    }
 
     public init(method: SNLHTTPMethod,
                 path: URL,
@@ -42,13 +38,13 @@ public struct SNLRequest: SNLRequestPrtcl {
                 body: Data? = nil)
     {
         self.method = method
-        self.path = path
         self.multipart = multipart
         self.dynamicPathsParts = dynamicPathsParts
         self.headers = headers
         self.params = params
         self.hash = hash
         self.body = body
+        self.path = path
         updatePath()
     }
 
