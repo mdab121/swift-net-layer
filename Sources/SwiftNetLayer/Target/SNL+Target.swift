@@ -31,11 +31,11 @@ open class SNLTarget: SNLTargetPrtcl {
                               resource: SNLResourcePrtcl,
                               method: SNLHTTPMethod,
                               multipart: Bool = false,
-                              dynamicPathsParts: SNLDynamicParts,
-                              requestHeaders: SNLHeader?,
-                              requestParams: SNLParams?,
+                              dynamicPathsParts: SNLDynamicParts? = nil,
+                              requestHeaders: SNLHeader? = nil,
+                              requestParams: SNLParams? = nil,
                               hash: String? = nil,
-                              body: SNLBody?) -> SNLExecutor
+                              body: SNLBody? = nil) -> SNLExecutorPrtcl
     {
         return SNLExecutor(resource: resource, method: method, path: path,
                     multipart: multipart, dynamicPathsParts: dynamicPathsParts,

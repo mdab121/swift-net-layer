@@ -14,7 +14,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var method: SNLHTTPMethod
     public var path: URL
     public var multipart: Bool
-    public var dynamicPathsParts: SNLDynamicParts
+    public var dynamicPathsParts: SNLDynamicParts?
     public var targetHeaders: SNLHeader?
     public var targetParams: SNLParams?
     public var requestHeaders: SNLHeader?

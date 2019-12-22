@@ -31,7 +31,7 @@ public struct SNLRequest: SNLRequestPrtcl {
     public init(method: SNLHTTPMethod,
                 path: URL,
                 multipart: Bool = false,
-                dynamicPathsParts: [String: String] = [:],
+                dynamicPathsParts: [String: String]?,
                 headers: [String: String]? = nil,
                 params: [String: Any]? = nil,
                 hash: String? = nil,
@@ -39,7 +39,7 @@ public struct SNLRequest: SNLRequestPrtcl {
     {
         self.method = method
         self.multipart = multipart
-        self.dynamicPathsParts = dynamicPathsParts
+        self.dynamicPathsParts = (dynamicPathsParts != nil ? dynamicPathsParts! : [:])
         self.headers = headers
         self.params = params
         self.hash = hash
