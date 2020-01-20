@@ -28,18 +28,25 @@ open class SNLTarget: SNLTargetPrtcl {
     }
 
     public func makeExecutor(target: SNLTargetPrtcl,
-                              resource: SNLResourcePrtcl,
-                              method: SNLHTTPMethod,
-                              multipart: Bool = false,
-                              dynamicPathsParts: SNLDynamicParts? = nil,
-                              requestHeaders: SNLHeader? = nil,
-                              requestParams: SNLParams? = nil,
-                              hash: String? = nil,
-                              body: SNLBody? = nil) -> SNLExecutorPrtcl
+                             resource: SNLResourcePrtcl,
+                             method: SNLHTTPMethod,
+                             multipart: Bool = false,
+                             dynamicPathsParts: SNLDynamicParts? = nil,
+                             requestHeaders: SNLHeader? = nil,
+                             requestParams: SNLParams? = nil,
+                             body: SNLBody? = nil,
+                             files: SNLFiles? = nil) -> SNLExecutorPrtcl
     {
-        return SNLExecutor(resource: resource, method: method, path: path,
-                    multipart: multipart, dynamicPathsParts: dynamicPathsParts,
-                    targetHeaders: target.headers, targetParams: target.params,
-                    requestHeaders: requestHeaders, requestParams: requestParams, hash: hash, body: body)
+        return SNLExecutor(resource: resource,
+                           method: method,
+                           path: path,
+                           multipart: multipart,
+                           dynamicPathsParts: dynamicPathsParts,
+                           targetHeaders: target.headers,
+                           targetParams: target.params,
+                           requestHeaders: requestHeaders,
+                           requestParams: requestParams,
+                           body: body,
+                           files: files)
     }
 }

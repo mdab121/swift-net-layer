@@ -12,15 +12,10 @@ public protocol SNLProviderPrtcl {
 
     init()
 
-    func executeRequest(url: URL,
-                        method: String,
-                        headers: [String: String]?,
-                        params: [String: Any]?,
-                        body: Data?,
-                        multipart: Bool,
+    func executeRequest(resource: SNLResourcePrtcl,
+                        request: SNLRequestPrtcl,
                         _ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
 
-    func executeRequest(resource: SNLResourcePrtcl, request: SNLRequestPrtcl, _ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
 }
 
 
@@ -28,22 +23,58 @@ public protocol SNLProviderPrtcl {
 
 public extension SNLProviderPrtcl {
 
-    func executeRequest(url: URL,
-                        method: String,
-                        headers: [String: String]?,
-                        params: [String: Any]?,
-                        body: Data?,
-                        multipart: Bool,
-                        _ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
+    private func fullURL(_ resource: SNLResourcePrtcl, _ request: SNLRequestPrtcl) -> URL {
+        var path = request.path.absoluteString
+        if !path["^\\/"] { path = "/\(path)" }
+        guard let newURL = URL(string: "\(resource.url.absoluteString)\(path)") else {
+            fatalError("NetProvider: Bad new URL")
+        }
+
+        return newURL
+    }
+
+    func executeRequest(resource: SNLResourcePrtcl,
+                        request: SNLRequestPrtcl,
+                        _ handler: @escaping (Data?, URLResponse?, Error?) -> Void = {_, _, _ in}) throws -> Void
     {
-        try Net.sendRequest(url: url.absoluteString,
-                        method: method,
-                        headers: headers,
-                        params: params,
-                        body: body,
-                        multipart: multipart)
+        var newParams = request.params ?? [:]
+        for (paramName, file) in request.files ?? [:] {
+            newParams[paramName] = NetSessionFile(data: file.data, fileName: file.fileName)
+        }
+        newParams = changeToSessionFiles(newParams)
+
+        try Net.sendRequest(url: fullURL(resource, request).absoluteString,
+                            method: request.method.rawValue,
+                            headers: request.headers,
+                            params: newParams,
+                            body: request.body,
+                            multipart: request.multipart)
         { (data, urlResponse, error) -> Void in
             handler(data, urlResponse, error)
         }
+    }
+
+    private func changeToSessionFiles<T>(_ anyObject: T) -> T {
+        func checkValue(_ anyObject: Any) -> Any {
+            if var array = anyObject as? Array<Any> {
+                for (index, element) in array.enumerated() {
+                    array[index] = checkValue(element)
+                }
+                return array
+            } else if var dictionary = anyObject as? Dictionary<String, Any> {
+                for key in dictionary.keys {
+                    dictionary[key] = checkValue(dictionary[key]!)
+                }
+                return dictionary
+            } else {
+                if let element = anyObject as? SNLFilePrtcl {
+                    return NetSessionFile(data: element.data, fileName: element.fileName)
+                } else {
+                    return anyObject
+                }
+            }
+        }
+
+        return checkValue(anyObject as AnyObject) as! T
     }
 }

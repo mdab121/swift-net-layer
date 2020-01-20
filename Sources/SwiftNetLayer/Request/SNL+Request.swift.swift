@@ -15,6 +15,7 @@ public struct SNLRequest: SNLRequestPrtcl {
     public var params: [String: Any]?
     public var hash: String?
     public var body: Data?
+    public var files: SNLFiles?
 
     private var _path: URL!
     public var path: URL {
@@ -35,7 +36,8 @@ public struct SNLRequest: SNLRequestPrtcl {
                 headers: [String: String]? = nil,
                 params: [String: Any]? = nil,
                 hash: String? = nil,
-                body: Data? = nil)
+                body: Data? = nil,
+                files: SNLFiles? = nil)
     {
         self.method = method
         self.multipart = multipart
@@ -45,6 +47,7 @@ public struct SNLRequest: SNLRequestPrtcl {
         self.hash = hash
         self.body = body
         self.path = path
+        self.files = files
         updatePath()
     }
 

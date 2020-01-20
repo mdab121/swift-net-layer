@@ -27,6 +27,6 @@ public protocol SNLTargetPrtcl {
                       dynamicPathsParts: SNLDynamicParts?,
                       requestHeaders: SNLHeader?,
                       requestParams: SNLParams?,
-                      hash: String?,
-                      body: SNLBody?) -> SNLExecutorPrtcl
+                      body: SNLBody?,
+                      files: SNLFiles?) -> SNLExecutorPrtcl
 }

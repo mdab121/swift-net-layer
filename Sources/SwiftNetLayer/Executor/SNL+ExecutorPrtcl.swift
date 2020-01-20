@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SNLExecutorPrtcl.swift
 //  
 //
 //  Created by Oleh Hudeichuk on 20.12.2019.
@@ -18,8 +18,8 @@ public protocol SNLExecutorPrtcl {
     var targetParams: SNLParams? { get set }
     var requestHeaders: SNLHeader? { get set }
     var requestParams: SNLParams? { get set }
-    var hash: String? { get set }
     var body: SNLBody? { get set }
+    var files: SNLFiles?  { get set }
 
     func execute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
 

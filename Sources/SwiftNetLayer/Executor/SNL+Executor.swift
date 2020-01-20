@@ -19,8 +19,8 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var targetParams: SNLParams?
     public var requestHeaders: SNLHeader?
     public var requestParams: SNLParams?
-    public var hash: String?
     public var body: SNLBody?
+    public var files: SNLFiles?
 
     public func execute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
         let provider = resource.provider
@@ -58,7 +58,8 @@ public struct SNLExecutor: SNLExecutorPrtcl {
                           headers: mergedHeaders,
                           params: mergedParams,
                           hash: nil,
-                          body: body)
+                          body: body,
+                          files: files)
     }
 
     private func mergeHeaders(_ resourceHeaders: SNLHeader?, _ targetHeaders: SNLHeader?, _ requestHeaders: SNLHeader?) -> SNLHeader {

@@ -11,3 +11,4 @@ public typealias SNLHeader = [String: String]
 public typealias SNLParams = [String: Any]
 public typealias SNLBody = Data
 public typealias SNLDynamicParts = [String: String]
+public typealias SNLFiles = [String: SNLFilePrtcl]

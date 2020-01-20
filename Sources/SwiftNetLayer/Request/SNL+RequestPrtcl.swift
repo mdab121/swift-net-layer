@@ -25,4 +25,6 @@ public protocol SNLRequestPrtcl {
     var hash: String? { get set }
     /// body
     var body: Data? { get set }
+    /// files
+    var files: SNLFiles? { get set }
 }
