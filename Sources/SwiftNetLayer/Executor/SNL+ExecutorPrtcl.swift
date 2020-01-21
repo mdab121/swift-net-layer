@@ -25,4 +25,9 @@ public protocol SNLExecutorPrtcl {
 
     func execute<ResponseModel: Decodable>(model: ResponseModel.Type,
                                            _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+
+    func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
+
+    func waitExecute<ResponseModel: Decodable>(model: ResponseModel.Type,
+                                               _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
 }

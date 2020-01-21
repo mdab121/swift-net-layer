@@ -47,6 +47,28 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         }
     }
 
+    public func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
+        let waitGroup = DispatchGroup()
+        waitGroup.enter()
+        try execute({ (data, response, error) in
+            handler(data, response, error)
+            waitGroup.leave()
+        })
+        waitGroup.wait()
+    }
+
+    public func waitExecute<ResponseModel: Decodable>(model: ResponseModel.Type,
+                                                      _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+    {
+        let waitGroup = DispatchGroup()
+        waitGroup.enter()
+        try execute(model: model) { (model, response, error) in
+            handler(model, response, error)
+            waitGroup.leave()
+        }
+        waitGroup.wait()
+    }
+
     private func makeRequest() -> SNLRequestPrtcl {
         let mergedHeaders = mergeHeaders(resource.defaultHeaders, targetHeaders, requestHeaders)
         let mergedParams = mergeParams(resource.defaultParams, targetParams, requestParams)
