@@ -7,10 +7,12 @@
 
 import Foundation
 
-public enum SNLHTTPMethod: String {
+public enum SNLHTTPMethod: String, CustomStringConvertible {
     case get
     case post
     case delete
     case patch
     case put
+
+    public var description: String { self.rawValue.uppercased() }
 }
