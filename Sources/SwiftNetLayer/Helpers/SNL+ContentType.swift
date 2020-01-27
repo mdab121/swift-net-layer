@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SNLContentType: String, CustomStringConvertible {
+public enum SNLContentType: String, CustomStringConvertible {
 
     // APPLICATION
     case applicationAtom = "application/atom+xml"

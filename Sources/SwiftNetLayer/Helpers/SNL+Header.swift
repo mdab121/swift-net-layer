@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SNLHeaderName: String, CustomStringConvertible {
+public enum SNLHeaderName: String, CustomStringConvertible {
     case aIM = "A-IM"
     case accept = "Accept"
     case acceptCharset = "Accept-Charset"
