@@ -12,4 +12,10 @@ public struct SNLFile: SNLFilePrtcl {
     public var mimeType: String
     public var data: Data
     public var fileName: String
+
+    public init(data: Data, fileName: String, mimeType: String) {
+        self.data = data
+        self.fileName = fileName
+        self.mimeType = mimeType
+    }
 }
