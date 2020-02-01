@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "SwiftNetLayer", targets: ["SwiftNetLayer"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/nerzh/swift-extensions-pack.git", from: "0.2.2"),
+        .package(url: "https://github.com/nerzh/swift-extensions-pack.git", from: "0.2.5"),
     ],
     targets: [
         .target(

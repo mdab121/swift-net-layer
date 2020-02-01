@@ -39,7 +39,7 @@ public extension SNLProviderPrtcl {
     {
         var newParams = request.params ?? [:]
         for (paramName, file) in request.files ?? [:] {
-            newParams[paramName] = NetSessionFile(data: file.data, fileName: file.fileName)
+            newParams[paramName] = NetSessionFile(data: file.data, fileName: file.fileName, mimeType: file.mimeType)
         }
         newParams = changeToSessionFiles(newParams)
 
@@ -68,7 +68,7 @@ public extension SNLProviderPrtcl {
                 return dictionary
             } else {
                 if let element = anyObject as? SNLFilePrtcl {
-                    return NetSessionFile(data: element.data, fileName: element.fileName)
+                    return NetSessionFile(data: element.data, fileName: element.fileName, mimeType: element.mimeType)
                 } else {
                     return anyObject
                 }

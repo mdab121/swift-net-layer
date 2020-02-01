@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct SNLFile: SNLFilePrtcl {
+public struct SNLFile: SNLFilePrtcl {
 
-    var data: Data
-    var fileName: String
+    public var mimeType: String
+    public var data: Data
+    public var fileName: String
 }

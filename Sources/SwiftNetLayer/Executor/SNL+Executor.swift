@@ -85,13 +85,22 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     }
 
     private func mergeHeaders(_ resourceHeaders: SNLHeader?, _ targetHeaders: SNLHeader?, _ requestHeaders: SNLHeader?) -> SNLHeader {
-        let resultHeaders = mergeOptionalDictionary(resourceHeaders, targetHeaders)
-        return mergeOptionalDictionary(resultHeaders, requestHeaders)
+        var resultHeaders = mergeOptionalDictionary(resourceHeaders, targetHeaders)
+        resultHeaders = mergeOptionalDictionary(resultHeaders, requestHeaders)
+        return mergeOptionalDictionary(resultHeaders, defaultHeaders())
     }
 
     private func mergeParams(_ resourceParams: SNLParams?, _ targetParams: SNLParams?, _ requestParams: SNLParams?) -> SNLParams {
         let resultParams = mergeOptionalDictionary(resourceParams, targetParams)
         return mergeOptionalDictionary(resultParams, requestParams)
+    }
+
+    private func defaultHeaders() -> SNLHeader {
+        var defaultHeaders: SNLHeader = [:]
+        if body == nil && requestHeaders?[SNLHeaderName.contentType.description] == nil {
+            defaultHeaders[SNLHeaderName.contentType.description] = SNLMIMEType.applicationXFormEncodedData.description
+        }
+        return defaultHeaders
     }
 
 }
