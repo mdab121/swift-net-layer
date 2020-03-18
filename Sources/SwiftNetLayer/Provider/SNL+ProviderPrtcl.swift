@@ -67,7 +67,8 @@ public extension SNLProviderPrtcl {
                 }
                 return dictionary
             } else {
-                if let element = anyObject as? SNLFilePrtcl {
+                #warning("TODO: STUPID FIX CAST __SwiftValue to Protocol for iOS 13")
+                if let element = anyObject as? SNLFile {
                     return NetSessionFile(data: element.data, fileName: element.fileName, mimeType: element.mimeType)
                 } else {
                     return anyObject
