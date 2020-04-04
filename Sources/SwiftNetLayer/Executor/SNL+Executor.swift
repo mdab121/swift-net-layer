@@ -51,8 +51,8 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
         try execute({ (data, response, error) in
-            waitGroup.leave()
             handler(data, response, error)
+            waitGroup.leave()
         })
         waitGroup.wait()
     }
@@ -63,8 +63,8 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
         try execute(model: model) { (model, response, error) in
-            waitGroup.leave()
             handler(model, response, error)
+            waitGroup.leave()
         }
         waitGroup.wait()
     }
