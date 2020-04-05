@@ -70,14 +70,14 @@ public struct SNLRequest: SNLRequestPrtcl {
         for var key in (path.matchesWithRange(pattern) as [Range<String.Index>: String]).values {
             key = key.regexp(pattern)[1] ?? ""
             guard let part = parts[key] else {
-                resultPath.replaceAllSelf(key, "")
+                resultPath.replaceSelf(key, "")
                 continue
             }
-            resultPath.replaceAllSelf(key, part)
+            resultPath.replaceSelf(key, part)
         }
 
-        resultPath.replaceAllSelf("//", "/")
-        resultPath.replaceSelf("/$", "")
+        resultPath.replaceSelf("//", "/")
+        resultPath.replaceFirstSelf("/$", "")
         guard let url = URL(string: resultPath) else { fatalError("NetRequest: Bad PATH") }
 
         return url
