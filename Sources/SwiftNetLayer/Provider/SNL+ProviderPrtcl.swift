@@ -44,7 +44,7 @@ public extension SNLProviderPrtcl {
         newParams = changeToSessionFiles(newParams)
 
         try Net.sendRequest(url: fullURL(resource, request).absoluteString,
-                            method: request.method.rawValue,
+                            method: request.method.rawValue.uppercased(),
                             headers: request.headers,
                             params: newParams,
                             body: request.body,
@@ -67,7 +67,7 @@ public extension SNLProviderPrtcl {
                 }
                 return dictionary
             } else {
-                #warning("TODO: STUPID FIX CAST __SwiftValue to Protocol for iOS 13")
+                #warning("TODO: STUPID FIX. CAST __SwiftValue to SNLFilePrtcl Protocol for iOS 13 RETURN NIL")
                 if let element = anyObject as? SNLFile {
                     return NetSessionFile(data: element.data, fileName: element.fileName, mimeType: element.mimeType)
                 } else {
