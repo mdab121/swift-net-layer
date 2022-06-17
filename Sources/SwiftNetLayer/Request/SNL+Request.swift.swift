@@ -76,9 +76,11 @@ public struct SNLRequest: SNLRequestPrtcl {
             if let part = parts[key] {
                 return part
             } else {
+                if path[#":[\s\S]+"#] { return "" }
                 return key
             }
         }.joined(separator: "/")
+        resultPath.replaceSelf("//", "/")
 
         guard let url = URL(string: resultPath) else { fatalError("NetRequest: Bad PATH") }
 
