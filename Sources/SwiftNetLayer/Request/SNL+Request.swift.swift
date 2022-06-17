@@ -62,7 +62,6 @@ public struct SNLRequest: SNLRequestPrtcl {
     private func replacePathsPart(path: String, parts: [String: String]) -> URL {
         var resultPath: String = path
         resultPath.replaceSelf("//", "/")
-        resultPath.replaceFirstSelf("/$", "")
         
         let pattern = "\\/(:[\\s\\S]+?)(\\/|$)"
         guard path[pattern] else {
@@ -81,6 +80,7 @@ public struct SNLRequest: SNLRequestPrtcl {
             }
         }.joined(separator: "/")
         resultPath.replaceSelf("//", "/")
+        resultPath.replaceFirstSelf("/$", "")
 
         guard let url = URL(string: resultPath) else { fatalError("NetRequest: Bad PATH") }
 
