@@ -60,24 +60,26 @@ public struct SNLRequest: SNLRequestPrtcl {
     }
 
     private func replacePathsPart(path: String, parts: [String: String]) -> URL {
-        var resultPath = path
+        var resultPath: String = path
+        resultPath.replaceSelf("//", "/")
+        resultPath.replaceFirstSelf("/$", "")
+        
         let pattern = "\\/(:[\\s\\S]+?)(\\/|$)"
         guard path[pattern] else {
             guard let url = URL(string: path) else { fatalError("NetRequest: Bad PATH") }
             return url
         }
 
-        for var key in (path.matchesWithRange(pattern) as [Range<String.Index>: String]).values {
-            key = key.regexp(pattern)[1] ?? ""
-            guard let part = parts[key] else {
-                resultPath.replaceSelf(key, "")
-                continue
+        let partsArray = path.split(separator: "/")
+        resultPath = arr.map { (str: String.SubSequence) -> String in
+            let key = String(str)
+            if let part = parts[key] {
+                return part
+            } else {
+                return key
             }
-            resultPath.replaceSelf(key, part)
-        }
+        }.joined(separator: "/")
 
-        resultPath.replaceSelf("//", "/")
-        resultPath.replaceFirstSelf("/$", "")
         guard let url = URL(string: resultPath) else { fatalError("NetRequest: Bad PATH") }
 
         return url
