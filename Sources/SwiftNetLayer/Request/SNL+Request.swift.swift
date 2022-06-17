@@ -71,7 +71,7 @@ public struct SNLRequest: SNLRequestPrtcl {
         }
 
         let partsArray = path.split(separator: "/")
-        resultPath = arr.map { (str: String.SubSequence) -> String in
+        resultPath = partsArray.map { (str: String.SubSequence) -> String in
             let key = String(str)
             if let part = parts[key] {
                 return part
