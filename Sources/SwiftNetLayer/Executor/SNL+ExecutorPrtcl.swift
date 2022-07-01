@@ -21,13 +21,13 @@ public protocol SNLExecutorPrtcl {
     var body: SNLBody? { get set }
     var files: SNLFiles?  { get set }
 
-    func execute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
+    func execute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
 
     func execute<ResponseModel: Decodable>(model: ResponseModel.Type,
-                                           _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+                                           _ handler: @escaping (ResponseModel?, URLResponse?, Error?) throws -> Void) throws
 
-    func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
+    func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
 
     func waitExecute<ResponseModel: Decodable>(model: ResponseModel.Type,
-                                               _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+                                               _ handler: @escaping (ResponseModel?, URLResponse?, Error?) throws -> Void) throws
 }

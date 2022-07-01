@@ -22,48 +22,48 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var body: SNLBody?
     public var files: SNLFiles?
 
-    public func execute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
+    public func execute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
         let provider = resource.provider
         let request = makeRequest()
         try provider.executeRequest(resource: resource, request: request, handler)
     }
 
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type,
-                                                  _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+                                                  _ handler: @escaping (ResponseModel?, URLResponse?, Error?) throws -> Void) throws
     {
         let provider = resource.provider
         let request = makeRequest()
         try provider.executeRequest(resource: resource, request: request) { (data, response, error) in
-            guard let data = data else {
-                handler(nil, response, error)
-                return
-            }
             do {
+                guard let data = data else {
+                    try handler(nil, response, error)
+                    return
+                }
                 let object = try JSONDecoder().decode(model, from: data)
-                handler(object, response, error)
+                try handler(object, response, error)
             } catch let error {
-                handler(nil, response, error)
+                try? handler(nil, response, error)
             }
         }
     }
 
-    public func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
+    public func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
         try execute({ (data, response, error) in
-            handler(data, response, error)
+            try handler(data, response, error)
             waitGroup.leave()
         })
         waitGroup.wait()
     }
 
     public func waitExecute<ResponseModel: Decodable>(model: ResponseModel.Type,
-                                                      _ handler: @escaping (ResponseModel?, URLResponse?, Error?) -> Void) throws
+                                                      _ handler: @escaping (ResponseModel?, URLResponse?, Error?) throws -> Void) throws
     {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
         try execute(model: model) { (model, response, error) in
-            handler(model, response, error)
+            try handler(model, response, error)
             waitGroup.leave()
         }
         waitGroup.wait()

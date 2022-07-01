@@ -9,51 +9,51 @@ import Foundation
 import SwiftExtensionsPack
 
 public protocol SNLProviderPrtcl {
-
+    
     init()
-
+    
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
-                        _ handler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
-
+                        _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
+    
 }
 
 
 // MARK: Default Realisation NetProviderPrtcl
 
 public extension SNLProviderPrtcl {
-
+    
     private func fullURL(_ resource: SNLResourcePrtcl, _ request: SNLRequestPrtcl) -> URL {
         var path = request.path.absoluteString
         if !path["^\\/"] { path = "/\(path)" }
         guard let newURL = URL(string: "\(resource.url.absoluteString)\(path)") else {
             fatalError("NetProvider: Bad new URL")
         }
-
+        
         return newURL
     }
-
+    
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
-                        _ handler: @escaping (Data?, URLResponse?, Error?) -> Void = {_, _, _ in}) throws -> Void
+                        _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void = {_, _, _ in}) throws -> Void
     {
         var newParams = request.params ?? [:]
         for (paramName, file) in request.files ?? [:] {
             newParams[paramName] = NetSessionFile(data: file.data, fileName: file.fileName, mimeType: file.mimeType)
         }
         newParams = changeToSessionFiles(newParams)
-
+        
         try Net.sendRequest(url: fullURL(resource, request).absoluteString,
                             method: request.method.rawValue.uppercased(),
                             headers: request.headers,
                             params: newParams,
                             body: request.body,
-                            multipart: request.multipart)
-        { (data, urlResponse, error) -> Void in
-            handler(data, urlResponse, error)
-        }
+                            multipart: request.multipart,
+                            {(data, urlResponse, error) -> Void in
+                                try handler(data, urlResponse, error)
+                            })
     }
-
+    
     private func changeToSessionFiles<T>(_ anyObject: T) -> T {
         func checkValue(_ anyObject: Any) -> Any {
             if var array = anyObject as? Array<Any> {
@@ -75,7 +75,7 @@ public extension SNLProviderPrtcl {
                 }
             }
         }
-
+        
         return checkValue(anyObject as AnyObject) as! T
     }
 }
