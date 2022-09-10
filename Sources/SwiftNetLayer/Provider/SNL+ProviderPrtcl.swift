@@ -43,12 +43,15 @@ public extension SNLProviderPrtcl {
         }
         newParams = changeToSessionFiles(newParams)
         
-        let sessionConfiguration = URLSessionConfiguration.default
-        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        sessionConfiguration.urlCache = nil
-        sessionConfiguration.timeoutIntervalForRequest = request.timeoutIntervalForRequest ?? 1000
-        sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
-        let sharedSession = URLSession(configuration: sessionConfiguration)
+        var sharedSession: URLSession!
+        if request.timeoutIntervalForRequest != nil || request.timeoutIntervalForResource != nil {
+            let sessionConfiguration = URLSessionConfiguration.default
+            sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
+            sessionConfiguration.urlCache = nil
+            sessionConfiguration.timeoutIntervalForRequest = request.timeoutIntervalForRequest ?? 1000
+            sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
+            sharedSession = URLSession(configuration: sessionConfiguration)
+        }
         
         try Net.sendRequest(url: fullURL(resource, request).absoluteString,
                             method: request.method.rawValue.uppercased(),
@@ -56,7 +59,7 @@ public extension SNLProviderPrtcl {
                             params: newParams,
                             body: request.body,
                             multipart: request.multipart,
-                            session: sharedSession,
+                            session: sharedSession ?? nil,
                             {(data, urlResponse, error) -> Void in
                                 try handler(data, urlResponse, error)
                             })
