@@ -14,7 +14,6 @@ public protocol SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
-                        session: URLSession?,
                         _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
     
 }
@@ -36,7 +35,6 @@ public extension SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
-                        session: URLSession? = nil,
                         _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void = {_, _, _ in}) throws -> Void
     {
         var newParams = request.params ?? [:]
@@ -45,12 +43,20 @@ public extension SNLProviderPrtcl {
         }
         newParams = changeToSessionFiles(newParams)
         
+        let sessionConfiguration = URLSessionConfiguration.default
+        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        sessionConfiguration.urlCache = nil
+        sessionConfiguration.timeoutIntervalForRequest = request.timeoutIntervalForRequest ?? 1000
+        sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
+        let sharedSession = URLSession(configuration: sessionConfiguration)
+        
         try Net.sendRequest(url: fullURL(resource, request).absoluteString,
                             method: request.method.rawValue.uppercased(),
                             headers: request.headers,
                             params: newParams,
                             body: request.body,
                             multipart: request.multipart,
+                            session: sharedSession,
                             {(data, urlResponse, error) -> Void in
                                 try handler(data, urlResponse, error)
                             })

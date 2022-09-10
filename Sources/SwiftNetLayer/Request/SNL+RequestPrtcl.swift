@@ -27,4 +27,8 @@ public protocol SNLRequestPrtcl {
     var body: Data? { get set }
     /// files
     var files: SNLFiles? { get set }
+    /// session timeoutIntervalForRequest
+    var timeoutIntervalForRequest: Double? { get set }
+    /// session timeoutIntervalForResource
+    var timeoutIntervalForResource: Double? { get set }
 }
