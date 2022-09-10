@@ -14,6 +14,7 @@ public protocol SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
+                        session: URLSession?,
                         _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
     
 }
@@ -35,6 +36,7 @@ public extension SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
+                        session: URLSession? = nil,
                         _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void = {_, _, _ in}) throws -> Void
     {
         var newParams = request.params ?? [:]
