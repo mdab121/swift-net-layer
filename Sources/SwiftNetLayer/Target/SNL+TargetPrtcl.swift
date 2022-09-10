@@ -28,5 +28,7 @@ public protocol SNLTargetPrtcl {
                       requestHeaders: SNLHeader?,
                       requestParams: SNLParams?,
                       body: SNLBody?,
-                      files: SNLFiles?) -> SNLExecutorPrtcl
+                      files: SNLFiles?,
+                      timeoutIntervalForRequest: Double?,
+                      timeoutIntervalForResource: Double?) -> SNLExecutorPrtcl
 }

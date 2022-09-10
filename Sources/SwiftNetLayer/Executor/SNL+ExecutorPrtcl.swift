@@ -20,6 +20,8 @@ public protocol SNLExecutorPrtcl {
     var requestParams: SNLParams? { get set }
     var body: SNLBody? { get set }
     var files: SNLFiles?  { get set }
+    var timeoutIntervalForRequest: Double? { get set }
+    var timeoutIntervalForResource: Double? { get set }
 
     func execute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
 

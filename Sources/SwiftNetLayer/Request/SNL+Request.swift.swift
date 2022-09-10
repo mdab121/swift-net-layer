@@ -8,7 +8,7 @@
 import Foundation
 
 public struct SNLRequest: SNLRequestPrtcl {
-
+    
     public var method: SNLHTTPMethod
     public var multipart: Bool
     public var headers: [String: String]?
@@ -16,6 +16,8 @@ public struct SNLRequest: SNLRequestPrtcl {
     public var hash: String?
     public var body: Data?
     public var files: SNLFiles?
+    public var timeoutIntervalForRequest: Double?
+    public var timeoutIntervalForResource: Double?
 
     private var _path: URL!
     public var path: URL {
@@ -37,8 +39,10 @@ public struct SNLRequest: SNLRequestPrtcl {
                 params: [String: Any]? = nil,
                 hash: String? = nil,
                 body: Data? = nil,
-                files: SNLFiles? = nil)
-    {
+                files: SNLFiles? = nil,
+                timeoutIntervalForRequest: Double? = nil,
+                timeoutIntervalForResource: Double? = nil
+    ) {
         self.method = method
         self.multipart = multipart
         self.dynamicPathsParts = (dynamicPathsParts != nil ? dynamicPathsParts! : [:])
@@ -48,6 +52,8 @@ public struct SNLRequest: SNLRequestPrtcl {
         self.body = body
         self.path = path
         self.files = files
+        self.timeoutIntervalForRequest = timeoutIntervalForRequest
+        self.timeoutIntervalForResource = timeoutIntervalForResource
         updatePath()
     }
 

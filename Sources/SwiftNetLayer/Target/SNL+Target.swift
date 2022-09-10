@@ -35,8 +35,10 @@ open class SNLTarget: SNLTargetPrtcl {
                              requestHeaders: SNLHeader? = nil,
                              requestParams: SNLParams? = nil,
                              body: SNLBody? = nil,
-                             files: SNLFiles? = nil) -> SNLExecutorPrtcl
-    {
+                             files: SNLFiles? = nil,
+                             timeoutIntervalForRequest: Double? = nil,
+                             timeoutIntervalForResource: Double? = nil
+    ) -> SNLExecutorPrtcl {
         return SNLExecutor(resource: resource,
                            method: method,
                            path: path,
@@ -47,6 +49,8 @@ open class SNLTarget: SNLTargetPrtcl {
                            requestHeaders: requestHeaders,
                            requestParams: requestParams,
                            body: body,
-                           files: files)
+                           files: files,
+                           timeoutIntervalForRequest: timeoutIntervalForRequest,
+                           timeoutIntervalForResource: timeoutIntervalForResource)
     }
 }

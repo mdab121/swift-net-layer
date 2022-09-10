@@ -21,6 +21,8 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var requestParams: SNLParams?
     public var body: SNLBody?
     public var files: SNLFiles?
+    public var timeoutIntervalForRequest: Double?
+    public var timeoutIntervalForResource: Double?
 
     public func execute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
         let provider = resource.provider
