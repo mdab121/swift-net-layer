@@ -16,6 +16,12 @@ public protocol SNLProviderPrtcl {
                         request: SNLRequestPrtcl,
                         _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
     
+    @available(iOS 13, *)
+    @available(macOS 12, *)
+    @discardableResult
+    func executeRequest(resource: SNLResourcePrtcl,
+                        request: SNLRequestPrtcl
+    ) async throws -> (Data?, URLResponse)
 }
 
 
@@ -63,6 +69,27 @@ public extension SNLProviderPrtcl {
                             {(data, urlResponse, error) -> Void in
                                 try handler(data, urlResponse, error)
                             })
+    }
+    
+    @available(iOS 13, *)
+    @available(macOS 12, *)
+    @discardableResult
+    func executeRequest(resource: SNLResourcePrtcl,
+                        request: SNLRequestPrtcl
+    ) async throws -> (Data?, URLResponse) {
+        try await withCheckedThrowingContinuation { conn in
+            do {
+                try executeRequest(resource: resource, request: request) { data, response, error in
+                    if let error = error {
+                        conn.resume(throwing: error)
+                    } else if let response = response {
+                        conn.resume(returning: (data, response))
+                    }
+                }
+            } catch {
+                conn.resume(throwing: error)
+            }
+        }
     }
     
     private func changeToSessionFiles<T>(_ anyObject: T) -> T {

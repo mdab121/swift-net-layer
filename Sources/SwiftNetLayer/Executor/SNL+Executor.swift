@@ -9,7 +9,6 @@ import Foundation
 import SwiftExtensionsPack
 
 public struct SNLExecutor: SNLExecutorPrtcl {
-
     public var resource: SNLResourcePrtcl
     public var method: SNLHTTPMethod
     public var path: URL
@@ -47,6 +46,27 @@ public struct SNLExecutor: SNLExecutorPrtcl {
                 try? handler(nil, response, error)
             }
         }
+    }
+    
+    @available(iOS 13, *)
+    @available(macOS 12, *)
+    @discardableResult
+    public func execute() async throws -> (Data?, URLResponse) {
+        let provider = resource.provider
+        let request = makeRequest()
+        return try await provider.executeRequest(resource: resource, request: request)
+    }
+    
+    @available(iOS 13, *)
+    @available(macOS 12, *)
+    @discardableResult
+    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel?, URLResponse) {
+        let provider = resource.provider
+        let request = makeRequest()
+        let out = try await provider.executeRequest(resource: resource, request: request)
+        guard let data = out.0 else { return (nil, out.1) }
+        let object = try JSONDecoder().decode(model, from: data)
+        return (object, out.1)
     }
 
     public func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
