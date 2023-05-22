@@ -65,8 +65,13 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         let request = makeRequest()
         let out = try await provider.executeRequest(resource: resource, request: request)
         guard let data = out.0 else { return (nil, out.1) }
-        let object = try JSONDecoder().decode(model, from: data)
-        return (object, out.1)
+        do {
+            let object = try JSONDecoder().decode(model, from: data)
+            return (object, out.1)
+        } catch {
+            let dataString: String? = String(data: data, encoding: .utf8)
+            throw SEPCommonError.mess("\(dataString ?? "") \(String(describing: error))")
+        }
     }
 
     public func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
