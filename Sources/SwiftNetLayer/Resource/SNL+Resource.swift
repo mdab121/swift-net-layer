@@ -26,7 +26,7 @@ open class SNLResource: SNLResourcePrtcl {
                 domain: String,
                 version: String? = nil,
                 defaultHeaders: [String: String]? = nil,
-                defaultParams: [String: String]? = nil)
+                defaultParams: [String: Any]? = nil)
     {
         self.provider = provider
         self.protocol = `protocol`
