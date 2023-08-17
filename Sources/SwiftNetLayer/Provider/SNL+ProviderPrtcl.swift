@@ -14,7 +14,7 @@ public protocol SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
-                        _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws
+                        _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws
     
     @available(iOS 13, *)
     @available(macOS 12, *)
@@ -41,7 +41,7 @@ public extension SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
-                        _ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void = {_, _, _ in}) throws -> Void
+                        _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void = {_, _, _ in}) throws -> Void
     {
         var newParams = request.params ?? [:]
         for (paramName, file) in request.files ?? [:] {
@@ -67,7 +67,7 @@ public extension SNLProviderPrtcl {
                             multipart: request.multipart,
                             session: sharedSession ?? nil,
                             {(data, urlResponse, error) -> Void in
-                                try handler(data, urlResponse, error)
+                                try handler(data, urlResponse, SNLError(String(describing: error)))
                             })
     }
     

@@ -23,14 +23,14 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var timeoutIntervalForRequest: Double?
     public var timeoutIntervalForResource: Double?
 
-    public func execute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
+    public func execute(_ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
         let provider = resource.provider
         let request = makeRequest()
         try provider.executeRequest(resource: resource, request: request, handler)
     }
 
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type,
-                                                  _ handler: @escaping (ResponseModel?, URLResponse?, Error?) throws -> Void) throws
+                                                  _ handler: @escaping (ResponseModel?, URLResponse?, SNLError?) throws -> Void) throws
     {
         let provider = resource.provider
         let request = makeRequest()
@@ -41,9 +41,9 @@ public struct SNLExecutor: SNLExecutorPrtcl {
                     return
                 }
                 let object = try JSONDecoder().decode(model, from: data)
-                try handler(object, response, error)
+                try handler(object, response, SNLError(String(describing: error)))
             } catch let error {
-                try? handler(nil, response, error)
+                try? handler(nil, response, SNLError(String(describing: error)))
             }
         }
     }
@@ -74,7 +74,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         }
     }
 
-    public func waitExecute(_ handler: @escaping (Data?, URLResponse?, Error?) throws -> Void) throws {
+    public func waitExecute(_ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
         try execute({ (data, response, error) in
@@ -85,7 +85,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     }
 
     public func waitExecute<ResponseModel: Decodable>(model: ResponseModel.Type,
-                                                      _ handler: @escaping (ResponseModel?, URLResponse?, Error?) throws -> Void) throws
+                                                      _ handler: @escaping (ResponseModel?, URLResponse?, SNLError?) throws -> Void) throws
     {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
