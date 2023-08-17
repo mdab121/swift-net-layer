@@ -58,7 +58,13 @@ public extension SNLProviderPrtcl {
             sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
             sharedSession = URLSession(configuration: sessionConfiguration)
         }
-        
+        let callback = {(data: Data?, urlResponse: URLResponse?, error: Error?) -> Void in
+            if let error {
+                try handler(data, urlResponse, SNLError(String(describing: error)))
+            } else {
+                try handler(data, urlResponse, nil)
+            }
+        }
         try Net.sendRequest(url: fullURL(resource, request).absoluteString,
                             method: request.method.rawValue.uppercased(),
                             headers: request.headers,
@@ -66,9 +72,7 @@ public extension SNLProviderPrtcl {
                             body: request.body,
                             multipart: request.multipart,
                             session: sharedSession ?? nil,
-                            {(data, urlResponse, error) -> Void in
-                                try handler(data, urlResponse, SNLError(String(describing: error)))
-                            })
+                            callback)
     }
     
     @available(iOS 13, *)

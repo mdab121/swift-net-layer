@@ -41,7 +41,11 @@ public struct SNLExecutor: SNLExecutorPrtcl {
                     return
                 }
                 let object = try JSONDecoder().decode(model, from: data)
-                try handler(object, response, SNLError(String(describing: error)))
+                if let error {
+                    try handler(object, response, SNLError(String(describing: error)))
+                } else {
+                    try handler(object, response, nil)
+                }
             } catch let error {
                 try? handler(nil, response, SNLError(String(describing: error)))
             }
@@ -70,7 +74,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
             return (object, out.1)
         } catch {
             let dataString: String? = String(data: data, encoding: .utf8)
-            throw SEPCommonError.mess("\(dataString ?? "") \(String(describing: error))")
+            throw SNLError("\(dataString ?? "") \(String(describing: error))")
         }
     }
 
