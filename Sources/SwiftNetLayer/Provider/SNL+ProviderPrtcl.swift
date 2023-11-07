@@ -21,7 +21,7 @@ public protocol SNLProviderPrtcl {
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl
-    ) async throws -> (Data?, URLResponse)
+    ) async throws -> (Data, URLResponse)
 }
 
 
@@ -80,20 +80,29 @@ public extension SNLProviderPrtcl {
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl
-    ) async throws -> (Data?, URLResponse) {
-        try await withCheckedThrowingContinuation { conn in
-            do {
-                try executeRequest(resource: resource, request: request) { data, response, error in
-                    if let error = error {
-                        conn.resume(throwing: error)
-                    } else if let response = response {
-                        conn.resume(returning: (data, response))
-                    }
-                }
-            } catch {
-                conn.resume(throwing: error)
-            }
+    ) async throws -> (Data, URLResponse) {
+        var newParams = request.params ?? [:]
+        for (paramName, file) in request.files ?? [:] {
+            newParams[paramName] = NetSessionFile(data: file.data, fileName: file.fileName, mimeType: file.mimeType)
         }
+        newParams = changeToSessionFiles(newParams)
+        
+        var sharedSession: URLSession!
+        if request.timeoutIntervalForRequest != nil || request.timeoutIntervalForResource != nil {
+            let sessionConfiguration = URLSessionConfiguration.default
+            sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
+            sessionConfiguration.urlCache = nil
+            sessionConfiguration.timeoutIntervalForRequest = request.timeoutIntervalForRequest ?? 1000
+            sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
+            sharedSession = URLSession(configuration: sessionConfiguration)
+        }
+        return try await Net.sendRequest(url: fullURL(resource, request).absoluteString,
+                                         method: request.method.rawValue.uppercased(),
+                                         headers: request.headers,
+                                         params: newParams,
+                                         body: request.body,
+                                         multipart: request.multipart,
+                                         session: sharedSession ?? nil)
     }
     
     private func changeToSessionFiles<T>(_ anyObject: T) -> T {

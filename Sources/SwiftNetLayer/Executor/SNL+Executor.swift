@@ -55,7 +55,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
-    public func execute() async throws -> (Data?, URLResponse) {
+    public func execute() async throws -> (Data, URLResponse) {
         let provider = resource.provider
         let request = makeRequest()
         return try await provider.executeRequest(resource: resource, request: request)
@@ -64,11 +64,11 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
-    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel?, URLResponse) {
+    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel, URLResponse) {
         let provider = resource.provider
         let request = makeRequest()
         let out = try await provider.executeRequest(resource: resource, request: request)
-        guard let data = out.0 else { return (nil, out.1) }
+        let data: Data = out.0
         do {
             let object = try JSONDecoder().decode(model, from: data)
             return (object, out.1)

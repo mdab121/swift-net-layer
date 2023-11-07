@@ -31,12 +31,12 @@ public protocol SNLExecutorPrtcl {
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
-    func execute() async throws -> (Data?, URLResponse)
+    func execute() async throws -> (Data, URLResponse)
     
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
-    func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel?, URLResponse)
+    func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel, URLResponse)
     
     func waitExecute(_ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws
 
