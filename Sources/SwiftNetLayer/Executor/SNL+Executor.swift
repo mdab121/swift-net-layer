@@ -23,18 +23,19 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var timeoutIntervalForRequest: Double?
     public var timeoutIntervalForResource: Double?
 
-    public func execute(_ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
+    public func execute(debug: Bool = false, _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
         let provider = resource.provider
         let request = makeRequest()
-        try provider.executeRequest(resource: resource, request: request, handler)
+        try provider.executeRequest(resource: resource, request: request, debug: debug, handler)
     }
 
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type,
+                                                  debug: Bool = false,
                                                   _ handler: @escaping (ResponseModel?, URLResponse?, SNLError?) throws -> Void) throws
     {
         let provider = resource.provider
         let request = makeRequest()
-        try provider.executeRequest(resource: resource, request: request) { (data, response, error) in
+        try provider.executeRequest(resource: resource, request: request, debug: debug) { (data, response, error) in
             do {
                 guard let data = data else {
                     try handler(nil, response, error)
@@ -55,19 +56,19 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
-    public func execute() async throws -> (Data, URLResponse) {
+    public func execute(debug: Bool = false) async throws -> (Data, URLResponse) {
         let provider = resource.provider
         let request = makeRequest()
-        return try await provider.executeRequest(resource: resource, request: request)
+        return try await provider.executeRequest(resource: resource, request: request, debug: debug)
     }
     
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
-    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel, URLResponse) {
+    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type, debug: Bool = false) async throws -> (ResponseModel, URLResponse) {
         let provider = resource.provider
         let request = makeRequest()
-        let out = try await provider.executeRequest(resource: resource, request: request)
+        let out = try await provider.executeRequest(resource: resource, request: request, debug: debug)
         let data: Data = out.0
         do {
             let object = try JSONDecoder().decode(model, from: data)
@@ -78,22 +79,23 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         }
     }
 
-    public func waitExecute(_ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
+    public func waitExecute(debug: Bool = false, _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
-        try execute({ (data, response, error) in
+        try execute(debug: debug) { (data, response, error) in
             try handler(data, response, error)
             waitGroup.leave()
-        })
+        }
         waitGroup.wait()
     }
 
     public func waitExecute<ResponseModel: Decodable>(model: ResponseModel.Type,
+                                                      debug: Bool = false,
                                                       _ handler: @escaping (ResponseModel?, URLResponse?, SNLError?) throws -> Void) throws
     {
         let waitGroup = DispatchGroup()
         waitGroup.enter()
-        try execute(model: model) { (model, response, error) in
+        try execute(model: model, debug: debug) { (model, response, error) in
             try handler(model, response, error)
             waitGroup.leave()
         }

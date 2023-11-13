@@ -14,13 +14,15 @@ public protocol SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
+                        debug: Bool,
                         _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws
     
     @available(iOS 13, *)
     @available(macOS 12, *)
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
-                        request: SNLRequestPrtcl
+                        request: SNLRequestPrtcl,
+                        debug: Bool
     ) async throws -> (Data, URLResponse)
 }
 
@@ -41,6 +43,7 @@ public extension SNLProviderPrtcl {
     
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
+                        debug: Bool = false,
                         _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void = {_, _, _ in}) throws -> Void
     {
         var newParams = request.params ?? [:]
@@ -65,6 +68,11 @@ public extension SNLProviderPrtcl {
                 try handler(data, urlResponse, nil)
             }
         }
+        
+        if debug {
+            printDebugInfo(resource: resource, request: request, params: newParams)
+        }
+        
         try Net.sendRequest(url: fullURL(resource, request).absoluteString,
                             method: request.method.rawValue.uppercased(),
                             headers: request.headers,
@@ -79,7 +87,8 @@ public extension SNLProviderPrtcl {
     @available(macOS 12, *)
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
-                        request: SNLRequestPrtcl
+                        request: SNLRequestPrtcl,
+                        debug: Bool = false
     ) async throws -> (Data, URLResponse) {
         var newParams = request.params ?? [:]
         for (paramName, file) in request.files ?? [:] {
@@ -96,6 +105,11 @@ public extension SNLProviderPrtcl {
             sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
             sharedSession = URLSession(configuration: sessionConfiguration)
         }
+        
+        if debug {
+            printDebugInfo(resource: resource, request: request, params: newParams)
+        }
+        
         return try await Net.sendRequest(url: fullURL(resource, request).absoluteString,
                                          method: request.method.rawValue.uppercased(),
                                          headers: request.headers,
@@ -128,5 +142,14 @@ public extension SNLProviderPrtcl {
         }
         
         return checkValue(anyObject as AnyObject) as! T
+    }
+    
+    private func printDebugInfo(resource: SNLResourcePrtcl, request: SNLRequestPrtcl, params: [String: Any]) {
+        print("SWIFT-NET-LAYER: url \(fullURL(resource, request).absoluteString)")
+        print("SWIFT-NET-LAYER: method \(request.method.rawValue.uppercased())")
+        print("SWIFT-NET-LAYER: headers \(request.headers ?? [:])")
+        print("SWIFT-NET-LAYER: params \(params)")
+        print("SWIFT-NET-LAYER: body \(request.body?.toJson ?? "")")
+        print("SWIFT-NET-LAYER: multipart \(request.multipart)")
     }
 }
