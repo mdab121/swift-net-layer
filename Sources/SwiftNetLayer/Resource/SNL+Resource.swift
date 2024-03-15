@@ -54,13 +54,15 @@ open class SNLResource: SNLResourcePrtcl {
                 domain: String,
                 version: String? = nil,
                 defaultHeaders: [String: String]? = nil,
-                defaultParams: [String: Any]? = nil)
-    {
+                defaultParams: [String: Any]? = nil,
+                requestPerSecondOptions: SafeValue<RequestPerSecondOptions>? = nil
+    ) {
         self.provider = provider
         self.protocol = `protocol`
         self.domain = domain
         self.version = version
         self.defaultHeaders = defaultHeaders
         self.defaultParams = defaultParams
+        self.requestPerSecondOptions = requestPerSecondOptions
     }
 }
