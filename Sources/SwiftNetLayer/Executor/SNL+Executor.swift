@@ -67,7 +67,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     
     @discardableResult
     public func execute(debug: Bool) async throws -> (Data, URLResponse) {
-        awaitAvailableSlotForRequest()
+        try await awaitAvailableSlotForRequest()
         let provider = resource.provider
         let request = makeRequest()
         return try await provider.executeRequest(resource: resource, request: request, debug: debug)
@@ -80,7 +80,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     
     @discardableResult
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type, debug: Bool) async throws -> (ResponseModel, URLResponse) {
-        awaitAvailableSlotForRequest()
+        try await awaitAvailableSlotForRequest()
         let provider = resource.provider
         let request = makeRequest()
         let out = try await provider.executeRequest(resource: resource, request: request, debug: debug)
@@ -167,10 +167,20 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     }
     
     private func awaitAvailableSlotForRequest() {
-        let delayBeforRetryRequest = resource.requestPerSecondOptions.value.retryDelaySecond
+        guard let requestPerSecondOptions = resource.requestPerSecondOptions else { return }
+        let delayBeforRetryRequest = requestPerSecondOptions.value.retryDelaySecond
         while !resource.allowRequest {
-            usleep(delayBeforRetryRequest)
+            usleep(delayBeforRetryRequest / 1000)
+        }
+    }
+    
+    private func awaitAvailableSlotForRequest() async throws {
+        guard let requestPerSecondOptions = resource.requestPerSecondOptions else { return }
+        let delayBeforRetryRequest = requestPerSecondOptions.value.retryDelaySecond
+        while !resource.allowRequest {
+            try await Task.sleep(nanoseconds: UInt64(delayBeforRetryRequest))
         }
     }
 }
+
 

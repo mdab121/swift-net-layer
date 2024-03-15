@@ -12,8 +12,8 @@ public struct RequestPerSecondOptions {
     var requestCounter: UInt = .init(0)
     var lastRequestTime: UInt = .init(Date().toSeconds())
     public var requestPerSecond: UInt = 100
-    /// usleep - delay before retry request
-    public var retryDelaySecond: UInt32 = 10000
+    /// nanoseconds - delay before retry request; default: 0.01 s
+    public var retryDelaySecond: UInt32 = 10_000_000
 }
 
 open class SNLResource: SNLResourcePrtcl {
