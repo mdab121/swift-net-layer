@@ -11,9 +11,14 @@ import SwiftExtensionsPack
 public struct RequestPerSecondOptions {
     var requestCounter: UInt = .init(0)
     var lastRequestTime: UInt = .init(Date().toSeconds())
-    public var requestPerSecond: UInt = 100
+    public var requestPerSecond: UInt
     /// nanoseconds - delay before retry request; default: 0.01 s
-    public var retryDelaySecond: UInt32 = 10_000_000
+    public var retryDelaySecond: UInt32
+    
+    public init(requestPerSecond: UInt = 100, retryDelaySecond: UInt32 = 10_000_000) {
+        self.requestPerSecond = requestPerSecond
+        self.retryDelaySecond = retryDelaySecond
+    }
 }
 
 open class SNLResource: SNLResourcePrtcl {
