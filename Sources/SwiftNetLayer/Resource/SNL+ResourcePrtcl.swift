@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftExtensionsPack
 
 public protocol SNLResourcePrtcl {
 
@@ -16,6 +17,8 @@ public protocol SNLResourcePrtcl {
     var defaultHeaders: [String: String]? { get set }
     var defaultParams: [String: Any]? { get set }
     var url: URL { get }
+    var requestPerSecondOptions: SafeValue<RequestPerSecondOptions>? { get set }
+    var allowRequest: Bool { get }
 }
 
 public extension SNLResourcePrtcl {

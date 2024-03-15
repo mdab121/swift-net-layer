@@ -24,6 +24,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     public var timeoutIntervalForResource: Double?
 
     public func execute(debug: Bool, _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
+        awaitAvailableSlotForRequest()
         let provider = resource.provider
         let request = makeRequest()
         try provider.executeRequest(resource: resource, request: request, debug: debug, handler)
@@ -37,6 +38,7 @@ public struct SNLExecutor: SNLExecutorPrtcl {
                                                   debug: Bool,
                                                   _ handler: @escaping (ResponseModel?, URLResponse?, SNLError?) throws -> Void) throws
     {
+        awaitAvailableSlotForRequest()
         let provider = resource.provider
         let request = makeRequest()
         try provider.executeRequest(resource: resource, request: request, debug: debug) { (data, response, error) in
@@ -63,26 +65,22 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         try execute(model: model, debug: false, handler)
     }
     
-    @available(iOS 13, *)
-    @available(macOS 12, *)
     @discardableResult
     public func execute(debug: Bool) async throws -> (Data, URLResponse) {
+        awaitAvailableSlotForRequest()
         let provider = resource.provider
         let request = makeRequest()
         return try await provider.executeRequest(resource: resource, request: request, debug: debug)
     }
     
-    @available(iOS 13, *)
-    @available(macOS 12, *)
     @discardableResult
     public func execute() async throws -> (Data, URLResponse) {
         try await execute(debug: false)
     }
     
-    @available(iOS 13, *)
-    @available(macOS 12, *)
     @discardableResult
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type, debug: Bool) async throws -> (ResponseModel, URLResponse) {
+        awaitAvailableSlotForRequest()
         let provider = resource.provider
         let request = makeRequest()
         let out = try await provider.executeRequest(resource: resource, request: request, debug: debug)
@@ -96,8 +94,6 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         }
     }
     
-    @available(iOS 13, *)
-    @available(macOS 12, *)
     @discardableResult
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel, URLResponse) {
         try await execute(model: model, debug: false)
@@ -169,6 +165,12 @@ public struct SNLExecutor: SNLExecutorPrtcl {
         }
         return defaultHeaders
     }
-
+    
+    private func awaitAvailableSlotForRequest() {
+        let delayBeforRetryRequest = resource.requestPerSecondOptions.value.retryDelaySecond
+        while !resource.allowRequest {
+            usleep(delayBeforRetryRequest)
+        }
+    }
 }
 

@@ -17,8 +17,6 @@ public protocol SNLProviderPrtcl {
                         debug: Bool,
                         _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws
     
-    @available(iOS 13, *)
-    @available(macOS 12, *)
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
@@ -83,8 +81,6 @@ public extension SNLProviderPrtcl {
                             callback)
     }
     
-    @available(iOS 13, *)
-    @available(macOS 12, *)
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
