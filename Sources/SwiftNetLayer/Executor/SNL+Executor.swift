@@ -74,8 +74,21 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     }
     
     @discardableResult
+    public func execute(debug: Bool) async throws -> Data {
+        try await awaitAvailableSlotForRequest()
+        let provider = resource.provider
+        let request = makeRequest()
+        return try await provider.executeRequest(resource: resource, request: request, debug: debug).0
+    }
+    
+    @discardableResult
     public func execute() async throws -> (Data, URLResponse) {
         try await execute(debug: false)
+    }
+    
+    @discardableResult
+    public func execute() async throws -> Data {
+        try await execute(debug: false).0
     }
     
     @discardableResult
