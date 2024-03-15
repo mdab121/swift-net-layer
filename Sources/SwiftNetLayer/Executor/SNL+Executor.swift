@@ -95,8 +95,18 @@ public struct SNLExecutor: SNLExecutorPrtcl {
     }
     
     @discardableResult
+    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type, debug: Bool) async throws -> ResponseModel {
+        try await execute(model: model, debug: debug).0
+    }
+    
+    @discardableResult
     public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> (ResponseModel, URLResponse) {
         try await execute(model: model, debug: false)
+    }
+    
+    @discardableResult
+    public func execute<ResponseModel: Decodable>(model: ResponseModel.Type) async throws -> ResponseModel {
+        try await execute(model: model, debug: false).0
     }
 
     public func waitExecute(debug: Bool, _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws {
