@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftExtensionsPack
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public struct SNLExecutor: SNLExecutorPrtcl {
     public var resource: SNLResourcePrtcl
