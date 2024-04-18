@@ -11,12 +11,15 @@ import SwiftExtensionsPack
 public struct RequestPerSecondOptions {
     var requestCounter: UInt = .init(0)
     var lastRequestTime: UInt = .init(Date().toSeconds())
-    public var requestPerSecond: UInt
+//    public var requestPerSecond: UInt
+    public var requestLimit: UInt
+    public var timeRangeLimitSecond: UInt
     /// nanoseconds - delay before retry request; default: 0.01 s
     public var retryDelaySecond: UInt32
     
-    public init(requestPerSecond: UInt = 100, retryDelaySecond: UInt32 = 10_000_000) {
-        self.requestPerSecond = requestPerSecond
+    public init(requestLimit: UInt = 100, timeRangeLimitSecond: UInt = 1, retryDelaySecond: UInt32 = 10_000_000) {
+        self.requestLimit = requestLimit
+        self.timeRangeLimitSecond = timeRangeLimitSecond
         self.retryDelaySecond = retryDelaySecond
     }
 }
@@ -40,12 +43,13 @@ open class SNLResource: SNLResourcePrtcl {
         guard let requestPerSecondOptions else { return true }
         let currentTime: UInt = Date().toSeconds()
         var allow: Bool = false
-        if currentTime > requestPerSecondOptions.value.lastRequestTime {
+        let range = currentTime - requestPerSecondOptions.value.lastRequestTime
+        if range >= requestPerSecondOptions.value.timeRangeLimitSecond {
             requestPerSecondOptions.change { $0.lastRequestTime = currentTime }
             requestPerSecondOptions.change { $0.requestCounter = 1 }
             allow = true
         }
-        if requestPerSecondOptions.value.requestCounter < requestPerSecondOptions.value.requestPerSecond {
+        if requestPerSecondOptions.value.requestCounter < requestPerSecondOptions.value.requestLimit {
             requestPerSecondOptions.change { $0.requestCounter += 1 }
             allow = true
         } else {
