@@ -1,4 +1,4 @@
-// swift-tools-version:5.8
+// swift-tools-version:6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "SwiftNetLayer", targets: ["SwiftNetLayer"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/nerzh/swift-extensions-pack.git", .upToNextMajor(from: "1.3.11")),
+        .package(url: "https://github.com/nerzh/swift-extensions-pack.git", .upToNextMajor(from: "2.0.0")),
     ],
     targets: [
         .target(
