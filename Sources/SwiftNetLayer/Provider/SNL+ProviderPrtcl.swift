@@ -18,7 +18,7 @@ public protocol SNLProviderPrtcl {
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
                         debug: Bool,
-                        _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void) throws
+                        _ handler: @escaping @Sendable (Data?, URLResponse?, SNLError?) throws -> Void) throws
     
     @discardableResult
     func executeRequest(resource: SNLResourcePrtcl,
@@ -45,7 +45,7 @@ public extension SNLProviderPrtcl {
     func executeRequest(resource: SNLResourcePrtcl,
                         request: SNLRequestPrtcl,
                         debug: Bool = false,
-                        _ handler: @escaping (Data?, URLResponse?, SNLError?) throws -> Void = {_, _, _ in}) throws -> Void
+                        _ handler: @escaping @Sendable (Data?, URLResponse?, SNLError?) throws -> Void = {_, _, _ in}) throws -> Void
     {
         var newParams = request.params ?? [:]
         for (paramName, file) in request.files ?? [:] {
@@ -62,7 +62,7 @@ public extension SNLProviderPrtcl {
             sessionConfiguration.timeoutIntervalForResource = request.timeoutIntervalForResource ?? 0
             sharedSession = URLSession(configuration: sessionConfiguration)
         }
-        let callback = {(data: Data?, urlResponse: URLResponse?, error: Error?) -> Void in
+        let callback = { @Sendable (data: Data?, urlResponse: URLResponse?, error: Error?) -> Void in
             if let error {
                 try handler(data, urlResponse, SNLError(String(describing: error)))
             } else {
