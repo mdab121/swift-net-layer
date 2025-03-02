@@ -5,16 +5,20 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftNetLayer",
+    
     platforms: [
        .macOS(.v12),
        .iOS(.v13)
     ],
+    
     products: [
         .library(name: "SwiftNetLayer", targets: ["SwiftNetLayer"]),
     ],
+    
     dependencies: [
         .package(url: "https://github.com/nerzh/swift-extensions-pack.git", .upToNextMajor(from: "2.0.0")),
     ],
+    
     targets: [
         .target(
             name: "SwiftNetLayer",
